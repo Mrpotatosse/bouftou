@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Map" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="bouftou.app.AppKt" />
+    <module name="bouftou.app.main" />
+    <option name="PROGRAM_PARAMETERS" value="map -i $USER_HOME$/dofus-2-39-0/app/ -m 84674563" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

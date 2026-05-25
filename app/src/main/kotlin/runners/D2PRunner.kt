@@ -11,6 +11,6 @@ class D2PRunner(
     val inputOption by option("--input", "-i", help = "Input folder path").required()
 
     override fun run() {
-        print(d2pService.parseEntryFromFolder(inputOption))
+        println(d2pService.parseEntryFromFolder(inputOption))
     }
 }

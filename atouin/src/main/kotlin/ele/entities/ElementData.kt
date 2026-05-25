@@ -1,6 +1,6 @@
 package ele.entities
 
-class ElementData(
+data class ElementData(
     val elementId: Int,
     val offset: Int
 )
