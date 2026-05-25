@@ -15,8 +15,15 @@ class NormalGraphicalElementDataService : ParamsParserService<NormalGraphicalEle
     override fun parse(
         raw: ByteBuffer,
         params: GraphicalEntry
-    ): NormalGraphicalElementData {
-        val result = NormalGraphicalElementData(params.elementData.elementId, GraphicalElementType.NORMAL)
+    ) = typedParse(raw, params, ::NormalGraphicalElementData, GraphicalElementType.NORMAL)
+
+    fun <T : NormalGraphicalElementData> typedParse(
+        raw: ByteBuffer,
+        params: GraphicalEntry,
+        ctor: (id: Int, type: GraphicalElementType) -> T,
+        type: GraphicalElementType
+    ): T {
+        val result = ctor(params.elementData.elementId, type)
         result.gfxId = raw.readInt()
         result.height = raw.readByte()
         result.horizontalSymmetry = raw.readBoolean()

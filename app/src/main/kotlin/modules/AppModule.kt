@@ -15,6 +15,6 @@ val appModule = module {
                 get<EleRunner>()
             )
     }
-    single { D2PRunner() }
-    single { EleRunner() }
+    single { D2PRunner(get()) }
+    single { EleRunner(get()) }
 }

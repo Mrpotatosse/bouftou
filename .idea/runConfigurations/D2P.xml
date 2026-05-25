@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="D2P" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="bouftou.app.AppKt" />
+    <module name="bouftou.app.main" />
+    <option name="PROGRAM_PARAMETERS" value="d2p -i $USER_HOME$/dofus-2-39-0/app/" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

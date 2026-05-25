@@ -4,7 +4,7 @@ import ele.entities.GraphicalElementData
 import ele.entities.GraphicalElementType
 import ele.entities.GraphicalEntry
 import ele.services.subtypes.*
-import extensions.readUnsignedByte
+import extensions.readByte
 import services.ParamsParserService
 import java.nio.ByteBuffer
 
@@ -17,7 +17,7 @@ class GraphicalElementDataService(
     private val particlesGraphicalElementDataService: ParticlesGraphicalElementDataService
 ) : ParamsParserService<GraphicalElementData, GraphicalEntry> {
     override fun parse(raw: ByteBuffer, params: GraphicalEntry): GraphicalElementData {
-        val type = GraphicalElementType.fromId(raw.readUnsignedByte())
+        val type = GraphicalElementType.fromId(raw.readByte())
         return when (type) {
             GraphicalElementType.BOUNDING_BOX -> boundingBoxGraphicalElementDataService.parse(raw, params)
             GraphicalElementType.ANIMATED -> animatedGraphicalElementDataService.parse(raw, params)

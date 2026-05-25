@@ -14,12 +14,14 @@ class AnimatedGraphicalElementDataService(
         raw: ByteBuffer,
         params: GraphicalEntry
     ): AnimatedGraphicalElementData {
-        val element = normalGraphicalElementDataService.parse(raw, params) as AnimatedGraphicalElementData
-        if (params.elementEntry.fileVersion in 4u..4u) {
+        val element = normalGraphicalElementDataService.typedParse(
+            raw, params, ::AnimatedGraphicalElementData,
+            GraphicalElementType.ANIMATED
+        )
+        if (params.elementEntry.fileVersion in 4..4) {
             element.minDelay = raw.readInt()
             element.maxDelay = raw.readInt()
         }
-        element.type = GraphicalElementType.ANIMATED
         return element
     }
 }

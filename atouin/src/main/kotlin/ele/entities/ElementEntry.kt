@@ -1,6 +1,6 @@
 package ele.entities
 
 data class ElementEntry(
-    val fileVersion: UByte,
+    val fileVersion: Byte,
     val elementsCount: UInt
 )

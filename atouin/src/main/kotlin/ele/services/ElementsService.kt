@@ -21,6 +21,7 @@ class ElementsService(
             ).deflate()
 
             val entry = entryService.parse(buffer, path.toString())
+            println("entry : $entry")
             val data = dataService.parse(buffer, entry)
             val isJpg = isJpgService.parse(buffer, entry)
             Elements(entry, data, isJpg)

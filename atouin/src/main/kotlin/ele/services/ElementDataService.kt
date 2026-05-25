@@ -13,7 +13,7 @@ class ElementDataService(
 ) : ParamsParserService<Map<Int, ElementData>, ElementEntry> {
     override fun parse(raw: ByteBuffer, params: ElementEntry) = mutableMapOf<Int, ElementData>().let { result ->
         repeat(params.elementsCount.toInt()) {
-            if (params.fileVersion >= 9u) raw.readUnsignedShort()
+            if (params.fileVersion >= 9) raw.readUnsignedShort()
             val elementId = raw.readInt()
 
             result[elementId] = ElementData(elementId, raw.position())

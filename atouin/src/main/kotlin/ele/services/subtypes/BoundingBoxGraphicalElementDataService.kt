@@ -13,8 +13,10 @@ class BoundingBoxGraphicalElementDataService(
         raw: ByteBuffer,
         params: GraphicalEntry
     ): BoundingBoxGraphicalElementData {
-        val element = normalGraphicalElementDataService.parse(raw, params) as BoundingBoxGraphicalElementData
-        element.type = GraphicalElementType.BOUNDING_BOX
+        val element = normalGraphicalElementDataService.typedParse(
+            raw, params, ::BoundingBoxGraphicalElementData,
+            GraphicalElementType.BOUNDING_BOX
+        )
         return element
     }
 }
