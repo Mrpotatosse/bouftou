@@ -3,16 +3,19 @@ package bouftou.app
 import bouftou.app.modules.appModule
 import bouftou.app.runners.AppRunner
 import com.github.ajalt.clikt.core.main
+import d2p.modules.d2pModule
+import ele.modules.eleModule
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.java.KoinJavaComponent.get
 
-fun main(args: Array<String>) {
+fun main(vararg args: String) {
     startKoin {
         modules(
-            appModule
+            appModule,
+            d2pModule,
+            eleModule
         )
     }
 
-    val runner = get<AppRunner>(AppRunner::class.java)
-    runner.main(args)
+    get<AppRunner>(AppRunner::class.java).main(args)
 }

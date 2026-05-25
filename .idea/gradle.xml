@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -19,6 +20,7 @@
           <set>
             <option value="/var/home/trakotobe/IdeaProjects/bouftou" />
             <option value="/var/home/trakotobe/IdeaProjects/bouftou/app" />
+            <option value="/var/home/trakotobe/IdeaProjects/bouftou/atouin" />
             <option value="/var/home/trakotobe/IdeaProjects/bouftou/buildSrc" />
             <option value="/var/home/trakotobe/IdeaProjects/bouftou/utils" />
           </set>
