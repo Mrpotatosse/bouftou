@@ -10,7 +10,7 @@ data class Map(
 
     // ── Identity ───────────────────────────────────────────────────────
     var relativeId: UInt = 0u, // AS3 uint → Long
-    var mapType: Byte = 0,
+    var mapType: MapType = MapType.OUTDOOR,
 
     // ── Neighbour map ids ──────────────────────────────────────────────
     var topNeighbourId: Int = 0,

@@ -1,9 +1,7 @@
 package dlm.services
 
 import const.AtouinConstants
-import dlm.entities.CellData
-import dlm.entities.Fixture
-import dlm.entities.Layer
+import dlm.entities.*
 import dlm.entities.Map
 import extensions.*
 import services.ParserService
@@ -41,7 +39,7 @@ class MapService(
 
         // ── Core identity ────────────────────────────────────────────────
         result.relativeId = decryptedRaw.readUnsignedInt()
-        result.mapType = decryptedRaw.readByte()
+        result.mapType = MapType.fromId(decryptedRaw.readByte())
         result.subareaId = decryptedRaw.readInt()
 
 
@@ -81,8 +79,8 @@ class MapService(
         }
 
         // ── Audio ────────────────────────────────────────────────────────
-        result.useLowPassFilter = decryptedRaw.readByte().toInt() == 1
-        result.useReverb = decryptedRaw.readByte().toInt() == 1
+        result.useLowPassFilter = decryptedRaw.readBoolean()
+        result.useReverb = decryptedRaw.readBoolean()
         result.presetId = if (result.useReverb) decryptedRaw.readInt() else -1
 
         // ── Background fixtures ──────────────────────────────────────────
