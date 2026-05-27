@@ -1,5 +1,6 @@
 package extensions
 
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
@@ -249,5 +250,31 @@ fun ByteBuffer.deflate(initialCapacity: Int = 1024 * 1024): ByteBuffer {
 
     } finally {
         inflater.end()
+    }
+}
+
+/*
+ * ============================================================
+ * InputStream
+ * ============================================================
+ */
+
+fun ByteBuffer.asInputStream(): InputStream {
+    val src = this
+
+    return object : InputStream() {
+
+        override fun read(): Int {
+            if (!src.hasRemaining()) return -1
+            return src.get().toInt() and 0xFF
+        }
+
+        override fun read(b: ByteArray, off: Int, len: Int): Int {
+            if (!src.hasRemaining()) return -1
+
+            val actualLen = minOf(len, src.remaining())
+            src.get(b, off, actualLen)
+            return actualLen
+        }
     }
 }

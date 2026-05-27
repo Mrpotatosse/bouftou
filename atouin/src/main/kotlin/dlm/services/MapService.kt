@@ -53,10 +53,10 @@ class MapService(
         if (result.mapVersion >= 9) {
             var c = decryptedRaw.readInt()
             // TODO: before:(c shr 24) and 0xFF after:(c shr 24).toByte()
-            result.backgroundAlpha = (c shr 24).toByte()
-            result.backgroundRed = (c shr 16).toByte()
-            result.backgroundGreen = (c shr 8).toByte()
-            result.backgroundBlue = c.toByte()
+            result.backgroundAlpha = (c shr 24) and 0xFF
+            result.backgroundRed = (c shr 16) and 0xFF
+            result.backgroundGreen = (c shr 8) and 0xFF
+            result.backgroundBlue = c and 0xFF
             c = decryptedRaw.readInt()
             val gA = (c shr 24) and 0xFF
             val gR = (c shr 16) and 0xFF
@@ -64,9 +64,9 @@ class MapService(
             val gB = c and 0xFF
             result.gridColor = packArgb(gA, gR, gG, gB)
         } else if (result.mapVersion >= 3) {
-            result.backgroundRed = decryptedRaw.readByte()
-            result.backgroundGreen = decryptedRaw.readByte()
-            result.backgroundBlue = decryptedRaw.readByte()
+            result.backgroundRed = decryptedRaw.readByte().toInt()
+            result.backgroundGreen = decryptedRaw.readByte().toInt()
+            result.backgroundBlue = decryptedRaw.readByte().toInt()
         }
 
         if (result.mapVersion >= 4) {

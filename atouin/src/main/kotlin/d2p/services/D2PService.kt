@@ -5,13 +5,14 @@ import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.extension
 
 class D2PService(
     private val dataService: D2PDataService,
     private val entryService: D2PEntryService,
 ) {
-    fun parseEntryFromFile(path: Path) =
+    fun parseEntryFromFile(path: Path, root: Path? = null) =
         if (path.extension == "d2p") FileChannel.open(path, StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
                 FileChannel.MapMode.READ_ONLY,
@@ -19,7 +20,8 @@ class D2PService(
                 channel.size()
             )
 
-            entryService.parse(buffer, path.toString())
+            val parent = root?.absolutePathString() ?: path.parent.absolutePathString()
+            entryService.parse(buffer, Pair(path.absolutePathString(), parent))
         } else throw IllegalArgumentException("invalid file path extension")
 
 
@@ -34,7 +36,7 @@ class D2PService(
                 .filter { Files.isRegularFile(it) && it.extension == "d2p" }
                 .sorted()
                 .forEach { file ->
-                    result.putAll(parseEntryFromFile(file))
+                    result.putAll(parseEntryFromFile(file, dir))
                 }
         }
 
@@ -54,5 +56,4 @@ class D2PService(
 
             dataService.parse(buffer, entry)
         }
-
 }

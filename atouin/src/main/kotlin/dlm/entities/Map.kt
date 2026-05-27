@@ -26,10 +26,10 @@ data class Map(
     var presetId: Int = -1,
 
     // ── Colours ────────────────────────────────────────────────────────
-    var backgroundAlpha: Byte = 0,
-    var backgroundRed: Byte = 0,
-    var backgroundGreen: Byte = 0,
-    var backgroundBlue: Byte = 0,
+    var backgroundAlpha: Int = 0,
+    var backgroundRed: Int = 0,
+    var backgroundGreen: Int = 0,
+    var backgroundBlue: Int = 0,
 
     /** Packed ARGB background colour derived from the individual channel fields. */
     var backgroundColor: Long = 0,

@@ -7,7 +7,6 @@ import dlm.services.elements.SoundElementService
 import org.koin.dsl.module
 
 val dlmModule = module {
-    single { DLMService() }
     single { MapService(get(), get(), get()) }
     single { LayerService(get()) }
     single { CellService(get()) }

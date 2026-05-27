@@ -1,5 +1,6 @@
 package bouftou.app
 
+import adapter.modules.adapterModule
 import bouftou.app.modules.appModule
 import bouftou.app.runners.AppRunner
 import com.github.ajalt.clikt.core.main
@@ -8,6 +9,7 @@ import dlm.modules.dlmModule
 import ele.modules.eleModule
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.java.KoinJavaComponent.get
+import render.modules.renderModule
 
 fun main(vararg args: String) {
     startKoin {
@@ -16,6 +18,8 @@ fun main(vararg args: String) {
             d2pModule,
             eleModule,
             dlmModule,
+            renderModule,
+            adapterModule
         )
     }
 
