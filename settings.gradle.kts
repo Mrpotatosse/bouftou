@@ -25,5 +25,6 @@ include(":utils")
 
 rootProject.name = "bouftou"
 include(
-    ":atouin"
+    ":atouin",
+    ":blop"
 )

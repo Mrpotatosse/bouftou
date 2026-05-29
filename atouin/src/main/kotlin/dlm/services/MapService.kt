@@ -2,7 +2,6 @@ package dlm.services
 
 import const.AtouinConstants
 import dlm.entities.*
-import dlm.entities.Map
 import extensions.*
 import services.ParserService
 import java.nio.ByteBuffer
@@ -11,12 +10,12 @@ class MapService(
     private val fixtureService: FixtureService,
     private val layerService: LayerService,
     private val cellDataService: CellDataService
-) : ParserService<Map> {
+) : ParserService<DofusMap> {
     val decryptionKey = AtouinConstants.MAP_KEY.toByteArray(Charsets.UTF_8)
 
-    override fun parse(raw: ByteBuffer): Map {
+    override fun parse(raw: ByteBuffer): DofusMap {
         if (raw.readByte().toInt() != 77) throw IllegalArgumentException("Invalid Map")
-        val result = Map(
+        val result = DofusMap(
             raw.readByte(),
             raw.readUnsignedInt()
         )

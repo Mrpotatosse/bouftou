@@ -3,7 +3,7 @@ package dlm.entities
 import ele.entities.Point
 
 class Fixture(
-    val map: Map
+    val dofusMap: DofusMap
 ) {
     var fixtureId: Int = 0
     lateinit var offset: Point

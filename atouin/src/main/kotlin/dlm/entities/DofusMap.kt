@@ -1,6 +1,6 @@
 package dlm.entities
 
-data class Map(
+data class DofusMap(
     var mapVersion: Byte,
     val id: UInt,
 

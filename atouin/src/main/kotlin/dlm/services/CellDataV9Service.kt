@@ -23,7 +23,7 @@ class CellDataV9Service : ParamsParserService<CellData, CellData> {
         val rightArrow: Boolean
         val leftArrow: Boolean
 
-        if (params.map.mapVersion >= 10) {
+        if (params.dofusMap.mapVersion >= 10) {
             params.havenbagCell = (tmp and 0x0100) != 0
             topArrow = (tmp and 0x0200) != 0
             bottomArrow = (tmp and 0x0400) != 0
@@ -36,10 +36,10 @@ class CellDataV9Service : ParamsParserService<CellData, CellData> {
             leftArrow = (tmp and 0x0800) != 0
         }
 
-        if (topArrow) params.map.topArrowCell.add(params.id)
-        if (bottomArrow) params.map.bottomArrowCell.add(params.id)
-        if (rightArrow) params.map.rightArrowCell.add(params.id)
-        if (leftArrow) params.map.leftArrowCell.add(params.id)
+        if (topArrow) params.dofusMap.topArrowCell.add(params.id)
+        if (bottomArrow) params.dofusMap.bottomArrowCell.add(params.id)
+        if (rightArrow) params.dofusMap.rightArrowCell.add(params.id)
+        if (leftArrow) params.dofusMap.leftArrowCell.add(params.id)
         return params
     }
 }

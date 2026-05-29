@@ -1,7 +1,7 @@
 package dlm.entities
 
 class CellData(
-    val map: Map,
+    val dofusMap: DofusMap,
     val id: Int
 ) {
     /** Floor altitude in pixel units (raw byte × 10). */

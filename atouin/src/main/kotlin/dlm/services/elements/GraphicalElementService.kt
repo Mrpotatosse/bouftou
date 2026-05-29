@@ -26,7 +26,7 @@ class GraphicalElementService : ParamsParserService<GraphicalElement, Cell> {
             raw.readByte().toDouble(),
             raw.readByte().toDouble()
         )
-        if (params.layer.map.mapVersion <= 4) {
+        if (params.layer.dofusMap.mapVersion <= 4) {
             result.offset = Point2D.Double(
                 raw.readByte().toDouble(),
                 raw.readByte().toDouble()

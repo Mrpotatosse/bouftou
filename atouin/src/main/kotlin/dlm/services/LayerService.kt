@@ -12,7 +12,7 @@ class LayerService(
     private val cellService: CellService
 ) : ParamsParserService<Layer, Layer> {
     override fun parse(raw: ByteBuffer, params: Layer): Layer {
-        params.layerId = if (params.map.mapVersion >= 9) raw.readByte().toInt() else raw.readInt()
+        params.layerId = if (params.dofusMap.mapVersion >= 9) raw.readByte().toInt() else raw.readInt()
         params.cellsCount = raw.readShort()
         repeat(params.cellsCount.toInt()) {
             params.cells.add(cellService.parse(raw, Cell(params)))

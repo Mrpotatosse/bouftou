@@ -1,7 +1,7 @@
 package dlm.entities
 
 class Layer(
-    val map: Map
+    val dofusMap: DofusMap
 ) {
     var layerId: Int = 0
     var refCell: Int = 0
