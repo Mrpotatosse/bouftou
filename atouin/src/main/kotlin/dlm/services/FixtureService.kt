@@ -5,6 +5,7 @@ import ele.entities.Point
 import extensions.readByte
 import extensions.readInt
 import extensions.readShort
+import extensions.readUnsignedByte
 import services.ParamsParserService
 import java.nio.ByteBuffer
 import kotlin.experimental.or
@@ -20,7 +21,7 @@ class FixtureService : ParamsParserService<Fixture, Fixture> {
         params.greenMultiplier = raw.readByte()
         params.blueMultiplier = raw.readByte()
         params.hue = params.redMultiplier or params.greenMultiplier or params.blueMultiplier
-        params.alpha = raw.readByte()
+        params.alpha = raw.readUnsignedByte()
         return params
     }
 }

@@ -53,10 +53,7 @@ class LayerRenderService(
         val graphical = data.second
         if (graphical !is NormalGraphicalElementData) return
         when (graphical.type) {
-            GraphicalElementType.NORMAL,
-            GraphicalElementType.BOUNDING_BOX,
-            GraphicalElementType.ANIMATED,
-            GraphicalElementType.BLENDED -> {
+            GraphicalElementType.NORMAL -> {
                 val gfx =
                     if (params.elements.isJpg.contains(graphical.gfxId)) params.jpgLoader.invoke(graphical.gfxId)
                         ?: return
@@ -85,6 +82,18 @@ class LayerRenderService(
                     (cellY + dataY).toInt(),
                     null
                 )
+            }
+
+            GraphicalElementType.BLENDED -> {
+                println("blended $element ${element.elementId}")
+            }
+
+            GraphicalElementType.BOUNDING_BOX -> {
+                println("bounding box $element ${element.elementId}")
+            }
+
+            GraphicalElementType.ANIMATED -> {
+                println("animated $element ${element.elementId}")
             }
 
             else -> {}

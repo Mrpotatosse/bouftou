@@ -27,5 +27,6 @@ rootProject.name = "bouftou"
 include(
     ":atouin",
     ":blop",
-    ":chafer"
+    ":chafer",
+    ":hiboukin"
 )

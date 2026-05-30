@@ -16,7 +16,7 @@ class Fixture(
     var hue: Byte = 0
 
     /** Alpha value (0–255). */
-    var alpha: Byte = 0
+    var alpha: UByte = 0u
 
     var xScale: Short = 0
     var yScale: Short = 0

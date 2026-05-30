@@ -5,7 +5,7 @@ import services.ChaferService
 
 val chaferModule =
     module {
-        includes(blopModule)
+        includes(blopModule, hiboukinModule)
         single {
             ChaferService(
                 get(),

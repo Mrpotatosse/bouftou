@@ -63,8 +63,23 @@ class FixtureRenderService(
                 scale(scaleX, scaleY)
                 translate(-halfW, -halfH)
             }
-            graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
-            graphic.drawImage(gfx, tx, null)
+            val redMul = (fixture.redMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
+            val greenMul = (fixture.greenMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
+            val blueMul = (fixture.blueMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
+            val prepared = graphicService.buildGfxImage(
+                gfx,
+                false,
+                redMul,
+                greenMul,
+                blueMul,
+            )
+
+            graphic.composite =
+                AlphaComposite.getInstance(
+                    AlphaComposite.SRC_OVER,
+                    (fixture.alpha.toDouble() / 255.0).toFloat().coerceIn(0f, 1f)
+                )
+            graphic.drawImage(prepared, tx, null)
         }
         graphic.dispose()
         return canvas
