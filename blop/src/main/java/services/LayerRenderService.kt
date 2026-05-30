@@ -53,7 +53,10 @@ class LayerRenderService(
         val graphical = data.second
         if (graphical !is NormalGraphicalElementData) return
         when (graphical.type) {
-            GraphicalElementType.NORMAL -> {
+            GraphicalElementType.NORMAL,
+            GraphicalElementType.BOUNDING_BOX,
+            GraphicalElementType.ANIMATED,
+            GraphicalElementType.BLENDED -> {
                 val gfx =
                     if (params.elements.isJpg.contains(graphical.gfxId)) params.jpgLoader.invoke(graphical.gfxId)
                         ?: return
