@@ -11,7 +11,6 @@ import entities.BlopEntry
 import java.awt.AlphaComposite
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
-import kotlin.math.roundToInt
 
 class LayerRenderService(
     private val graphicService: GraphicService
@@ -62,11 +61,12 @@ class LayerRenderService(
                 val originOffsetX = -graphical.origin.x
                 val originOffsetY = -graphical.origin.y
 
-                val dataX = originOffsetX + (AtouinConstants.CELL_HALF_WIDTH + element.pixelOffset.x).roundToInt()
+                val dataX = originOffsetX + (AtouinConstants.CELL_HALF_WIDTH + element.pixelOffset.x)
                 val dataY =
-                    originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y).roundToInt()
+                    originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y)
 
                 val cm = element.colorMultiplicator
+                
                 val prepared = graphicService.buildGfxImage(
                     gfx,
                     graphical.horizontalSymmetry,
@@ -74,7 +74,6 @@ class LayerRenderService(
                     (cm.green / 255.0f).toFloat(),
                     (cm.blue / 255.0f).toFloat(),
                 )
-
                 graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
                 graphic.drawImage(
                     prepared,

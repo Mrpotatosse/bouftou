@@ -67,7 +67,10 @@ class MapService(
             result.backgroundGreen = decryptedRaw.readByte().toInt()
             result.backgroundBlue = decryptedRaw.readByte().toInt()
         }
-
+        result.backgroundColor = packArgb(
+            result.backgroundAlpha, result.backgroundRed,
+            result.backgroundGreen, result.backgroundBlue
+        )
         if (result.mapVersion >= 4) {
             result.zoomScale = decryptedRaw.readUnsignedShort().toDouble() / 100.0
             result.zoomOffsetX = decryptedRaw.readShort()

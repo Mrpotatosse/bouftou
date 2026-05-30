@@ -14,34 +14,8 @@ class FixtureRenderService(
         raw: BufferedImage,
         params: BlopEntry,
         fixtures: Collection<Fixture>,
-        resizeToLargestFixture: Boolean = false
     ): BufferedImage {
-        // Compute the bounding box of all rendered fixtures if resize is requested
-        val canvas = if (resizeToLargestFixture) {
-            var maxW = raw.width
-            var maxH = raw.height
-            for (fixture in fixtures) {
-                val gfx =
-                    if (params.elements.isJpg.contains(fixture.fixtureId)) params.jpgLoader.invoke(fixture.fixtureId)
-                        ?: continue
-                    else params.pngLoader.invoke(fixture.fixtureId) ?: continue
-                val scaleX = fixture.xScale / 1000.0
-                val scaleY = fixture.yScale / 1000.0
-                val scaledW = (gfx.width * scaleX + fixture.offset.x + AtouinConstants.CELL_HALF_WIDTH).toInt()
-                val scaledH = (gfx.height * scaleY + fixture.offset.y + AtouinConstants.CELL_HEIGHT).toInt()
-                if (scaledW > maxW) maxW = scaledW
-                if (scaledH > maxH) maxH = scaledH
-            }
-            BufferedImage(maxW, maxH, raw.type).also { newCanvas ->
-                val g = newCanvas.createGraphics()
-                g.drawImage(raw, 0, 0, null)
-                g.dispose()
-            }
-        } else {
-            raw
-        }
-
-        val graphic = graphicService.getGraphic(canvas)
+        val graphic = graphicService.getGraphic(raw)
         for (fixture in fixtures) {
             val gfx =
                 if (params.elements.isJpg.contains(fixture.fixtureId)) params.jpgLoader.invoke(fixture.fixtureId)
@@ -66,22 +40,19 @@ class FixtureRenderService(
             val redMul = (fixture.redMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
             val greenMul = (fixture.greenMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
             val blueMul = (fixture.blueMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
+            val alphaMul = (fixture.alpha / 255u).toFloat().coerceIn(0f, 1f)
+
             val prepared = graphicService.buildGfxImage(
                 gfx,
                 false,
                 redMul,
                 greenMul,
-                blueMul,
+                blueMul
             )
-
-            graphic.composite =
-                AlphaComposite.getInstance(
-                    AlphaComposite.SRC_OVER,
-                    (fixture.alpha.toDouble() / 255.0).toFloat().coerceIn(0f, 1f)
-                )
+            graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaMul)
             graphic.drawImage(prepared, tx, null)
         }
         graphic.dispose()
-        return canvas
+        return raw
     }
 }

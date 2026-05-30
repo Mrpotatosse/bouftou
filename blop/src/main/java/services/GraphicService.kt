@@ -17,15 +17,14 @@ class GraphicService {
         it!!
     }
 
-    fun fillBackground(buffer: BufferedImage, colorRaw: Long) = createCanvas(buffer.width, buffer.height)
-        .let { raw ->
-            getGraphic(raw).let { graphic ->
-                graphic.fillRectRaw(colorRaw, raw.width, raw.height)
-                graphic.drawImage(buffer, 0, 0, raw.width, raw.height, null)
-                graphic.dispose()
-            }
-            raw
-        }
+    fun fillBackground(buffer: BufferedImage, colorRaw: Long): BufferedImage {
+        val raw = createCanvas(buffer.width, buffer.height) // fresh ARGB canvas
+        val graphic = getGraphic(raw)
+        graphic.fillRectRaw(colorRaw, raw.width, raw.height) // paint background
+        graphic.drawImage(buffer, 0, 0, null)               // composite map on top
+        graphic.dispose()
+        return raw
+    }
 
     private fun applyColorTransform(
         buffer: BufferedImage,
