@@ -5,6 +5,7 @@ import dlm.entities.Cell
 import dlm.entities.Layer
 import dlm.entities.elements.BasicElement
 import dlm.entities.elements.GraphicalElement
+import ele.entities.GraphicalElementType
 import ele.entities.subtypes.NormalGraphicalElementData
 import entities.BlopEntry
 import java.awt.AlphaComposite
@@ -51,31 +52,41 @@ class LayerRenderService(
         val data = params.elements.data[element.elementId.toInt()] ?: return
         val graphical = data.second
         if (graphical !is NormalGraphicalElementData) return
+        when (graphical.type) {
+            GraphicalElementType.NORMAL -> {
+                val gfx =
+                    if (params.elements.isJpg.contains(graphical.gfxId)) params.jpgLoader.invoke(graphical.gfxId)
+                        ?: return
+                    else params.pngLoader.invoke(graphical.gfxId) ?: return
 
-        val gfx = params.pngLoader.invoke(graphical.gfxId) ?: return
+                val originOffsetX = -graphical.origin.x
+                val originOffsetY = -graphical.origin.y
 
-        val originOffsetX = -graphical.origin.x
-        val originOffsetY = -graphical.origin.y
+                val dataX = originOffsetX + (AtouinConstants.CELL_HALF_WIDTH + element.pixelOffset.x).roundToInt()
+                val dataY =
+                    originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y).roundToInt()
 
-        val dataX = originOffsetX + (AtouinConstants.CELL_HALF_WIDTH + element.pixelOffset.x).roundToInt()
-        val dataY =
-            originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y).roundToInt()
+                val cm = element.colorMultiplicator
+                val prepared = graphicService.buildGfxImage(
+                    gfx,
+                    graphical.horizontalSymmetry,
+                    (cm.red / 255.0f).toFloat(),
+                    (cm.green / 255.0f).toFloat(),
+                    (cm.blue / 255.0f).toFloat(),
+                )
 
-        val cm = element.colorMultiplicator
-        val prepared = graphicService.buildGfxImage(
-            gfx,
-            graphical.horizontalSymmetry,
-            (cm.red / 255.0f).toFloat(),
-            (cm.green / 255.0f).toFloat(),
-            (cm.blue / 255.0f).toFloat(),
-        )
+                graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
+                graphic.drawImage(
+                    prepared,
+                    (cellX + dataX).toInt(),
+                    (cellY + dataY).toInt(),
+                    null
+                )
+            }
 
-        graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
-        graphic.drawImage(
-            prepared,
-            (cellX + dataX).toInt(),
-            (cellY + dataY).toInt(),
-            null
-        )
+            else -> {}
+        }
+
+
     }
 }

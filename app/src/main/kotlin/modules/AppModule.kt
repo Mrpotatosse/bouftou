@@ -1,9 +1,6 @@
 package bouftou.app.modules
 
-import bouftou.app.runners.AppRunner
-import bouftou.app.runners.D2PRunner
-import bouftou.app.runners.EleRunner
-import bouftou.app.runners.MapRunner
+import bouftou.app.runners.*
 import com.github.ajalt.clikt.core.subcommands
 import org.koin.dsl.module
 
@@ -15,6 +12,7 @@ val appModule = module {
                 get<D2PRunner>(),
                 get<EleRunner>(),
                 get<MapRunner>(),
+                get<UIRunner>(),
             )
     }
     single { D2PRunner(get()) }
@@ -29,4 +27,5 @@ val appModule = module {
             get()
         )
     }
+    single { UIRunner(get()) }
 }

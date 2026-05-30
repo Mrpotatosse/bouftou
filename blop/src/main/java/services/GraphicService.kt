@@ -21,7 +21,6 @@ class GraphicService {
         .let { raw ->
             getGraphic(raw).let { graphic ->
                 graphic.fillRectRaw(colorRaw, raw.width, raw.height)
-                println(raw)
                 graphic.drawImage(buffer, 0, 0, raw.width, raw.height, null)
                 graphic.dispose()
             }

@@ -43,7 +43,9 @@ class MapRunner(
         ImageIO.write(
             blopService.render(
                 graphicService.createCanvas(1280, 1024), BlopEntry(
-                    d2pEntry, elements, map, worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry)
+                    d2pEntry, elements, map,
+                    worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry),
+                    worldAdapterService.jpgLoader(d2pEntry, d2pService::parseDataFromEntry)
                 )
             ),
             "png",

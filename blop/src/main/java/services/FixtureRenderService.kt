@@ -21,7 +21,10 @@ class FixtureRenderService(
             var maxW = raw.width
             var maxH = raw.height
             for (fixture in fixtures) {
-                val gfx = params.pngLoader.invoke(fixture.fixtureId) ?: continue
+                val gfx =
+                    if (params.elements.isJpg.contains(fixture.fixtureId)) params.jpgLoader.invoke(fixture.fixtureId)
+                        ?: continue
+                    else params.pngLoader.invoke(fixture.fixtureId) ?: continue
                 val scaleX = fixture.xScale / 1000.0
                 val scaleY = fixture.yScale / 1000.0
                 val scaledW = (gfx.width * scaleX + fixture.offset.x + AtouinConstants.CELL_HALF_WIDTH).toInt()
@@ -40,7 +43,10 @@ class FixtureRenderService(
 
         val graphic = graphicService.getGraphic(canvas)
         for (fixture in fixtures) {
-            val gfx = params.pngLoader.invoke(fixture.fixtureId) ?: continue
+            val gfx =
+                if (params.elements.isJpg.contains(fixture.fixtureId)) params.jpgLoader.invoke(fixture.fixtureId)
+                    ?: continue
+                else params.pngLoader.invoke(fixture.fixtureId) ?: continue
             val imgW = gfx.width.toDouble()
             val imgH = gfx.height.toDouble()
             val halfW = imgW * 0.5

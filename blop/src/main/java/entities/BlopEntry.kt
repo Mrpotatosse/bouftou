@@ -9,5 +9,6 @@ data class BlopEntry(
     val d2pEntry: Map<String, D2PEntry>,
     val elements: Elements,
     val dofusMap: DofusMap,
-    val pngLoader: (id: Int) -> BufferedImage?
+    val pngLoader: (id: Int) -> BufferedImage?,
+    val jpgLoader: (id: Int) -> BufferedImage?
 )
