@@ -8,6 +8,10 @@ import dlm.entities.elements.GraphicalElement
 import ele.entities.GraphicalElementType
 import ele.entities.subtypes.NormalGraphicalElementData
 import entities.BlopEntry
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import java.awt.AlphaComposite
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -15,19 +19,45 @@ import java.awt.image.BufferedImage
 class LayerRenderService(
     private val graphicService: GraphicService
 ) : ParamsRenderService<BufferedImage, BlopEntry> {
-    override fun render(raw: BufferedImage, params: BlopEntry): BufferedImage {
+    override fun render(raw: BufferedImage, params: BlopEntry): BufferedImage = runBlocking {
+        val layerImages = params.dofusMap.layers
+            .map { layer ->
+                async(Dispatchers.Default) {
+                    val layerBuffer = graphicService.createCanvas(
+                        raw.width,
+                        raw.height
+                    )
+
+                    val layerGraphic = graphicService.getGraphic(layerBuffer)
+
+                    try {
+                        renderLayer(params, layerGraphic, layer)
+                        layerBuffer
+                    } finally {
+                        layerGraphic.dispose()
+                    }
+                }
+            }
+            .awaitAll()
+
         val graphic = graphicService.getGraphic(raw)
-        for (layer in params.dofusMap.layers) {
-            renderLayer(params, graphic, layer)
+
+        try {
+            layerImages.forEach {
+                graphic.drawImage(it, 0, 0, null)
+            }
+        } finally {
+            graphic.dispose()
         }
-        graphic.dispose()
-        return raw
+
+        raw
     }
 
-    private fun renderLayer(params: BlopEntry, graphic: Graphics2D, layer: Layer) =
+    private fun renderLayer(params: BlopEntry, graphic: Graphics2D, layer: Layer) {
         layer.cells.forEach {
             renderCell(params, graphic, it)
         }
+    }
 
     private fun renderCell(params: BlopEntry, graphic: Graphics2D, cell: Cell) {
         val col = cell.cellId % AtouinConstants.MAP_WIDTH
@@ -66,7 +96,7 @@ class LayerRenderService(
                     originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y)
 
                 val cm = element.colorMultiplicator
-                
+
                 val prepared = graphicService.buildGfxImage(
                     gfx,
                     graphical.horizontalSymmetry,
@@ -83,21 +113,7 @@ class LayerRenderService(
                 )
             }
 
-            GraphicalElementType.BLENDED -> {
-                println("blended $element ${element.elementId}")
-            }
-
-            GraphicalElementType.BOUNDING_BOX -> {
-                println("bounding box $element ${element.elementId}")
-            }
-
-            GraphicalElementType.ANIMATED -> {
-                println("animated $element ${element.elementId}")
-            }
-
             else -> {}
         }
-
-
     }
 }

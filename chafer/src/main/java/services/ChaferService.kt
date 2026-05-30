@@ -6,6 +6,7 @@ import d2p.services.D2PService
 import dlm.services.MapService
 import ele.services.ElementsService
 import entities.BlopEntry
+import kotlinx.coroutines.*
 import java.awt.*
 import java.nio.file.Paths
 import javax.swing.*
@@ -19,6 +20,7 @@ class ChaferService(
     private val blopService: BlopService,
     private val graphicService: GraphicService,
 ) {
+    private val renderScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     fun application(dofusFolder: String) {
         val d2pEntry = d2pService.parseEntryFromFolder(dofusFolder)
         val elements = elementsService.parseElementsFromFile(
@@ -62,21 +64,28 @@ class ChaferService(
                 .map { it.substringAfterLast("/").removeSuffix(".dlm").toInt() }
                 .sortedBy { it }
             val mapList = JList(mapIds.toTypedArray())
+
             fun drawFromMapId(id: Int) {
-                currentMap = mapService.parse(
-                    worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
-                        ?: return
-                )
-                currentMapBuffer = blopService.render(
-                    graphicService.createCanvas(1280, 1024), BlopEntry(
-                        d2pEntry,
-                        elements,
-                        currentMap,
-                        worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry),
-                        worldAdapterService.jpgLoader(d2pEntry, d2pService::parseDataFromEntry)
+                renderScope.launch {
+                    val dlm =
+                        worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry) ?: return@launch
+                    val map = mapService.parse(dlm)
+                    val buffer = blopService.render(
+                        graphicService.createCanvas(1280, 1024), BlopEntry(
+                            d2pEntry,
+                            elements,
+                            map,
+                            worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry),
+                            worldAdapterService.jpgLoader(d2pEntry, d2pService::parseDataFromEntry)
+                        )
                     )
-                )
-                mapPanel.repaint()
+                    // Only UI update goes back on EDT
+                    withContext(Dispatchers.Main) {
+                        currentMap = map
+                        currentMapBuffer = buffer
+                        mapPanel.repaint()
+                    }
+                }
             }
             mapList.selectionMode = ListSelectionModel.SINGLE_SELECTION
             mapList.selectedIndex = 0
