@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":atouin"))
     implementation(project(":blop"))
     implementation(project(":chafer"))
+    implementation(project(":hiboukin"))
 }
 
 application {

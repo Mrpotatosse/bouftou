@@ -13,6 +13,7 @@ val appModule = module {
                 get<EleRunner>(),
                 get<MapRunner>(),
                 get<UIRunner>(),
+                get<D2ORunner>()
             )
     }
     single { D2PRunner(get()) }
@@ -28,4 +29,5 @@ val appModule = module {
         )
     }
     single { UIRunner(get()) }
+    single { D2ORunner(get()) }
 }
