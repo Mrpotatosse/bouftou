@@ -347,7 +347,7 @@ class ChaferService(
                 overlay.start()
                 enableNav(false)
                 renderScope.launch {
-                    mapPanel.mapImage = null // release old image first
+                    // mapPanel.mapImage = null // release old image first
                     val (dlm, dlmDur) = measureTimedValue {
                         worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
                             ?: run {
