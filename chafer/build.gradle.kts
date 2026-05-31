@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":atouin"))
     implementation(project(":hiboukin"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
 }
 
 kotlin {

@@ -11,7 +11,6 @@ val atouinModule = module {
         d2pModule,
         eleModule,
         dlmModule,
-        // renderModule,
         adapterModule
     )
 }

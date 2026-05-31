@@ -45,11 +45,11 @@ class D2PService(
         parseEntryFromFolder(Path.of(path))
 
     fun parseDataFromEntry(entry: D2PEntry) =
-        FileChannel.open(Path.of(entry.path), StandardOpenOption.READ).use { channel ->
+        FileChannel.open(entry.path, StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
                 FileChannel.MapMode.READ_ONLY,
-                0,
-                channel.size()
+                entry.offset.toLong(),
+                entry.size.toLong()
             )
 
             dataService.parse(buffer, entry)

@@ -13,6 +13,7 @@ val chaferModule =
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             )
         }

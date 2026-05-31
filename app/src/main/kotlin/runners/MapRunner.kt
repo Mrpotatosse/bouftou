@@ -39,7 +39,15 @@ class MapRunner(
             worldAdapterService.parseDlm(d2pEntry, mapIdOption, d2pService::parseDataFromEntry)
                 ?: error("Map buffer could not be parsed")
         )
-
+        println(
+            """
+            neighbours:
+                - top: ${map.topNeighbourId}
+                - right: ${map.rightNeighbourId}
+                - bottom: ${map.bottomNeighbourId}
+                - left: ${map.leftNeighbourId}
+        """.trimIndent()
+        )
         ImageIO.write(
             blopService.render(
                 graphicService.createCanvas(1280, 1024), BlopEntry(
