@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage
 import java.nio.file.Paths
 import javax.swing.*
 import javax.swing.border.EmptyBorder
+import kotlin.time.DurationUnit
+import kotlin.time.measureTimedValue
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 private object Theme {
@@ -346,22 +348,47 @@ class ChaferService(
                 enableNav(false)
                 renderScope.launch {
                     mapPanel.mapImage = null // release old image first
-                    val dlm = worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
-                        ?: run {
-                            withContext(Dispatchers.Swing) { overlay.stop(); enableNav(true) }
-                            return@launch
-                        }
-                    val map = mapService.parse(dlm)
-                    val buffer = blopService.render(
-                        graphicService.createCanvas(1280, 1024),
-                        BlopEntry(
-                            d2pEntry, elements, map,
-                            worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry),
-                            worldAdapterService.jpgLoader(d2pEntry, d2pService::parseDataFromEntry)
+                    val (dlm, dlmDur) = measureTimedValue {
+                        worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
+                            ?: run {
+                                withContext(Dispatchers.Swing) { overlay.stop(); enableNav(true) }
+                                return@launch
+                            }
+                    }
+                    val (map, mapDur) = measureTimedValue {
+                        mapService.parse(dlm)
+                    }
+                    val (buffer, bufferDur) = measureTimedValue {
+                        blopService.render(
+                            graphicService.createCanvas(1280, 1024),
+                            BlopEntry(
+                                d2pEntry, elements, map,
+                                worldAdapterService.pngLoader(d2pEntry, d2pService::parseDataFromEntry),
+                                worldAdapterService.jpgLoader(d2pEntry, d2pService::parseDataFromEntry)
+                            )
                         )
+                    }
+                    val (scroll, scrollDur) = measureTimedValue {
+                        d2oService.parseObjectFromEntry(mapScrollActionsEntry, map.id.toInt())
+                    }
+                    println(
+                        """
+    🗺️  Map Render
+    ─────────────────────────────────────────
+    id        : ${map.id}
+    type      : ${map.mapType}
+    version   : ${map.mapVersion}
+    subarea   : ${map.subareaId}
+    
+    ── timing ───────────────────────────────
+    dlm       : ${dlmDur.toString(DurationUnit.MILLISECONDS)}
+    map       : ${mapDur.toString(DurationUnit.MILLISECONDS)}
+    buffer    : ${bufferDur.toString(DurationUnit.MILLISECONDS)}
+    scroll    : ${scrollDur.toString(DurationUnit.MILLISECONDS)}
+    total     : ${(dlmDur + mapDur + bufferDur + scrollDur).toString(DurationUnit.MILLISECONDS)} 
+    ─────────────────────────────────────────
+    """.trimIndent()
                     )
-                    val scroll = d2oService.parseObjectFromEntry(mapScrollActionsEntry, map.id.toInt())
-
                     withContext(Dispatchers.Swing) {
                         currentMap = map
                         currentScroll = scroll

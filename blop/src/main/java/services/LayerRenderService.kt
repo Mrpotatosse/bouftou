@@ -15,6 +15,8 @@ import kotlinx.coroutines.runBlocking
 import java.awt.AlphaComposite
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import kotlin.time.DurationUnit
+import kotlin.time.measureTime
 
 class LayerRenderService(
     private val graphicService: GraphicService
@@ -31,7 +33,8 @@ class LayerRenderService(
                     val layerGraphic = graphicService.getGraphic(layerBuffer)
 
                     try {
-                        renderLayer(params, layerGraphic, layer)
+                        val layerRenderDur = measureTime { renderLayer(params, layerGraphic, layer) }
+                        println("               Layer RenderDuration: ${layerRenderDur.toString(DurationUnit.MILLISECONDS)}")
                         layerBuffer
                     } finally {
                         layerGraphic.dispose()
