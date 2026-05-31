@@ -28,8 +28,6 @@ private object Theme {
     val accentDim = Color(0x2A, 0x45, 0x7A)
     val fg = Color(0xE4, 0xE6, 0xF0)
     val fgMuted = Color(0x7A, 0x80, 0x99)
-    val success = Color(0x4C, 0xD9, 0x8A)
-    val danger = Color(0xFF, 0x5F, 0x5F)
 }
 
 // ── Reusable UI primitives ────────────────────────────────────────────────────
@@ -89,24 +87,6 @@ private fun navButton(symbol: String): JButton = object : JButton(symbol) {
         super.paintComponent(g)
     }
 }.also { it.isEnabled = false /* enabled once map loads */ }
-
-/** Pill badge shown next to a map ID. */
-private fun badge(text: String, color: Color = Theme.accent): JLabel =
-    object : JLabel(" $text ") {
-        init {
-            foreground = Color.WHITE
-            font = Font(Font.MONOSPACED, Font.BOLD, 10)
-            isOpaque = false
-        }
-
-        override fun paintComponent(g: Graphics) {
-            val g2 = g as Graphics2D
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-            g2.color = color
-            g2.fillRoundRect(0, 0, width, height, height, height)
-            super.paintComponent(g)
-        }
-    }
 
 // ── Spinning loader overlay ───────────────────────────────────────────────────
 
@@ -492,15 +472,14 @@ class ChaferService(
             }
 
             // Map viewport with overlay stacked
-            val viewport = JLayeredPane().apply {
+            val viewport = object : JLayeredPane() {
+                override fun doLayout() {
+                    // Called by Swing's layout pass, guaranteed to run even on first paint
+                    for (c in components) c.setBounds(0, 0, width, height)
+                }
+            }.apply {
                 add(mapPanel, JLayeredPane.DEFAULT_LAYER)
                 add(overlay, JLayeredPane.POPUP_LAYER)
-                addComponentListener(object : ComponentAdapter() {
-                    override fun componentResized(e: ComponentEvent) {
-                        mapPanel.setBounds(0, 0, width, height)
-                        overlay.setBounds(0, 0, width, height)
-                    }
-                })
             }
 
             // Root
@@ -513,14 +492,26 @@ class ChaferService(
             }
 
             // ── Frame ─────────────────────────────────────────────────────────
-            val frame = JFrame("Chafer — Map Visualizer").apply {
+            JFrame("Chafer — Map Visualizer").apply {
                 defaultCloseOperation = JFrame.EXIT_ON_CLOSE
                 contentPane = root
                 minimumSize = Dimension(900, 600)
                 pack()
                 setLocationRelativeTo(null)
                 extendedState = JFrame.MAXIMIZED_BOTH
+
+                addComponentListener(object : ComponentAdapter() {
+                    override fun componentResized(e: ComponentEvent) {
+                        print(e.component.size)
+                        root.setSize(e.component.size.width, e.component.size.height)
+                        root.revalidate()
+                        root.repaint()
+                    }
+                })
+
                 isVisible = true
+
+                validate() // ← force a full layout pass after maximized state is applied
             }
 
             // Initial state

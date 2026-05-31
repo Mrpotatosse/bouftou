@@ -5,6 +5,8 @@ plugins {
 
     // Apply the Application plugin to add support for building an executable JVM application.
     application
+
+    id("com.gradleup.shadow") version "9.4.2"
 }
 
 dependencies {
