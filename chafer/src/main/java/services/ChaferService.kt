@@ -347,6 +347,14 @@ class ChaferService(
                 overlay.start()
                 enableNav(false)
                 renderScope.launch {
+                    // ✅ Release the old image BEFORE allocating the new one.
+                    // Without this, the old BufferedImage (1280×1024 ARGB = ~5MB) stays live
+                    // while the new one is being built — peak usage doubles unnecessarily.
+                    withContext(Dispatchers.Swing) {
+                        mapPanel.mapImage?.flush()  // releases native surface/raster backing
+                        mapPanel.mapImage = null    // drops the JVM reference → eligible for GC
+                    }
+
                     // mapPanel.mapImage = null // release old image first
                     val (dlm, dlmDur) = measureTimedValue {
                         worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
