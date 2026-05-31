@@ -28,9 +28,9 @@ class GraphicService {
 
     private fun applyColorTransform(
         buffer: BufferedImage,
-        redMul: Float,
-        greenMul: Float,
-        blueMul: Float,
+        redMul: Double,
+        greenMul: Double,
+        blueMul: Double,
     ): BufferedImage {
         val w = buffer.width
         val h = buffer.height
@@ -62,9 +62,9 @@ class GraphicService {
     fun buildGfxImage(
         buffer: BufferedImage,
         flipHorizontally: Boolean,
-        colorTransformRed: Float,
-        colorTransformGreen: Float,
-        colorTransformBlue: Float,
+        colorTransformRed: Double,
+        colorTransformGreen: Double,
+        colorTransformBlue: Double,
     ): BufferedImage {
         var img = if (buffer.type == BufferedImage.TYPE_INT_ARGB) buffer
         else convertToArgb(buffer)
@@ -79,7 +79,7 @@ class GraphicService {
         }
 
         val isIdentity =
-            colorTransformRed == 1f && colorTransformGreen == 1f && colorTransformBlue == 1f
+            colorTransformRed == 1.0 && colorTransformGreen == 1.0 && colorTransformBlue == 1.0
         if (!isIdentity) {
             img = applyColorTransform(
                 img,

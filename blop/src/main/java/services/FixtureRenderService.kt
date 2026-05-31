@@ -37,9 +37,9 @@ class FixtureRenderService(
                 scale(scaleX, scaleY)
                 translate(-halfW, -halfH)
             }
-            val redMul = (fixture.redMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
-            val greenMul = (fixture.greenMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
-            val blueMul = (fixture.blueMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f)
+            val redMul = (fixture.redMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f).toDouble()
+            val greenMul = (fixture.greenMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f).toDouble()
+            val blueMul = (fixture.blueMultiplier / 127.0 + 1.0).toFloat().coerceIn(0f, 1f).toDouble()
             val alphaMul = (fixture.alpha / 255u).toFloat().coerceIn(0f, 1f)
 
             val prepared = graphicService.buildGfxImage(

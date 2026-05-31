@@ -80,43 +80,36 @@ class LayerRenderService(
         cellX: Double,
         cellY: Double
     ) {
-        if (element !is GraphicalElement) return
-        val data = params.elements.data[element.elementId.toInt()] ?: return
-        val graphical = data.second
-        if (graphical !is NormalGraphicalElementData) return
-        when (graphical.type) {
-            GraphicalElementType.NORMAL -> {
-                val gfx =
-                    if (params.elements.isJpg.contains(graphical.gfxId)) params.jpgLoader.invoke(graphical.gfxId)
-                        ?: return
-                    else params.pngLoader.invoke(graphical.gfxId) ?: return
+        val ge = element as? GraphicalElement ?: return
 
-                val originOffsetX = -graphical.origin.x
-                val originOffsetY = -graphical.origin.y
+        val (_, graphicalAny) = params.elements.data[ge.elementId.toInt()] ?: return
+        val graphical = graphicalAny as? NormalGraphicalElementData ?: return
 
-                val dataX = originOffsetX + (AtouinConstants.CELL_HALF_WIDTH + element.pixelOffset.x)
-                val dataY =
-                    originOffsetY + (AtouinConstants.CELL_HALF_HEIGHT - element.altitude * 10.0 + element.pixelOffset.y)
+        if (graphical.type != GraphicalElementType.NORMAL) return
 
-                val cm = element.colorMultiplicator
+        val gfx = if (params.elements.isJpg.contains(graphical.gfxId)) {
+            params.jpgLoader.invoke(graphical.gfxId)
+        } else {
+            params.pngLoader.invoke(graphical.gfxId)
+        } ?: return
 
-                val prepared = graphicService.buildGfxImage(
-                    gfx,
-                    graphical.horizontalSymmetry,
-                    (cm.red / 255.0f).toFloat(),
-                    (cm.green / 255.0f).toFloat(),
-                    (cm.blue / 255.0f).toFloat(),
-                )
-                graphic.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)
-                graphic.drawImage(
-                    prepared,
-                    (cellX + dataX).toInt(),
-                    (cellY + dataY).toInt(),
-                    null
-                )
-            }
+        val originX = cellX + (-graphical.origin.x + AtouinConstants.CELL_HALF_WIDTH + ge.pixelOffset.x)
+        val originY =
+            cellY + (-graphical.origin.y + AtouinConstants.CELL_HALF_HEIGHT - ge.altitude * 10.0 + ge.pixelOffset.y)
 
-            else -> {}
-        }
+        val cm = ge.colorMultiplicator
+
+        val prepared = graphicService.buildGfxImage(
+            gfx,
+            graphical.horizontalSymmetry,
+            cm.red / 255.0,
+            cm.green / 255.0,
+            cm.blue / 255.0
+        )
+
+        // 🔥 Only set composite once per frame if possible (huge win)
+        graphic.composite = AlphaComposite.SrcOver
+
+        graphic.drawImage(prepared, originX.toInt(), originY.toInt(), null)
     }
 }
