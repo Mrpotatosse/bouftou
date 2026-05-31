@@ -345,6 +345,7 @@ class ChaferService(
                 overlay.start()
                 enableNav(false)
                 renderScope.launch {
+                    mapPanel.mapImage = null // release old image first
                     val dlm = worldAdapterService.parseDlm(d2pEntry, id, d2pService::parseDataFromEntry)
                         ?: run {
                             withContext(Dispatchers.Swing) { overlay.stop(); enableNav(true) }
@@ -502,7 +503,6 @@ class ChaferService(
 
                 addComponentListener(object : ComponentAdapter() {
                     override fun componentResized(e: ComponentEvent) {
-                        print(e.component.size)
                         root.setSize(e.component.size.width, e.component.size.height)
                         root.revalidate()
                         root.repaint()

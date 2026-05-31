@@ -1,11 +1,13 @@
 package d2o.services
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import d2o.entities.D2ODataType
 import d2o.entities.D2OEntry
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
+import java.time.Duration
 import kotlin.io.path.extension
 import kotlin.io.path.name
 
@@ -47,17 +49,24 @@ class D2OService(
     fun parseEntryFromFolder(path: String) =
         parseEntryFromFolder(Path.of(path))
 
-    fun parseObjectFromEntry(entry: D2OEntry, id: Int) =
-        entry.indexes[id]?.let { offset ->
-            FileChannel.open(entry.path, StandardOpenOption.READ).use { channel ->
+    private fun internalParseObjectFromEntry(value: Pair<D2OEntry, Int>) =
+        value.first.indexes[value.second]?.let { offset ->
+            FileChannel.open(value.first.path, StandardOpenOption.READ).use { channel ->
                 val buffer = channel.map(
                     FileChannel.MapMode.READ_ONLY,
                     offset.toLong(),
                     channel.size() - offset
                 )
 
-                d2oObjectService.parse(buffer, entry)
+                d2oObjectService.parse(buffer, value.first)
             }
         }
+
+    private val _dataEntryCache = Caffeine.newBuilder()
+        .maximumSize(512 * 1024 * 1024)
+        .expireAfterWrite(Duration.ofSeconds(60))
+        .build(::internalParseObjectFromEntry)
+
+    fun parseObjectFromEntry(entry: D2OEntry, id: Int) = internalParseObjectFromEntry(Pair(entry, id))
 
 }

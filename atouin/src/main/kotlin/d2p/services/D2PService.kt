@@ -1,16 +1,19 @@
 package d2p.services
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import d2p.entitites.D2PEntry
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
+import java.time.Duration
 import kotlin.io.path.extension
 
 class D2PService(
     private val dataService: D2PDataService,
     private val entryService: D2PEntryService,
 ) {
+
     fun parseEntryFromFile(path: Path, root: Path? = null) =
         if (path.extension == "d2p") FileChannel.open(path, StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
@@ -19,7 +22,9 @@ class D2PService(
                 channel.size()
             )
 
-            entryService.parse(buffer, Pair(path, root))
+            entryService.parse(buffer, Pair(path, root)).apply {
+                buffer.clear()
+            }
         } else throw IllegalArgumentException("invalid file path extension")
 
 
@@ -44,7 +49,7 @@ class D2PService(
     fun parseEntryFromFolder(path: String) =
         parseEntryFromFolder(Path.of(path))
 
-    fun parseDataFromEntry(entry: D2PEntry) =
+    private fun internalParseDataFromEntry(entry: D2PEntry) =
         FileChannel.open(entry.path, StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
                 FileChannel.MapMode.READ_ONLY,
@@ -54,4 +59,12 @@ class D2PService(
 
             dataService.parse(buffer, entry)
         }
+
+    private val _dataEntryCache = Caffeine.newBuilder()
+        .maximumSize(512 * 1024 * 1024)
+        .expireAfterWrite(Duration.ofSeconds(60))
+        .build(::internalParseDataFromEntry)
+
+    fun parseDataFromEntry(entry: D2PEntry) = _dataEntryCache.get(entry)
+
 }
