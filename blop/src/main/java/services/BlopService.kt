@@ -1,6 +1,7 @@
 package services
 
 import entities.BlopEntry
+import extensions.profile
 import java.awt.image.BufferedImage
 
 class BlopService(
@@ -10,10 +11,15 @@ class BlopService(
     private val foregroundRenderService: ForegroundRenderService
 ) : ParamsRenderService<BufferedImage, BlopEntry> {
     override fun render(raw: BufferedImage, params: BlopEntry): BufferedImage {
-        return raw
-            .let { backgroundRenderService.render(it, params) }
-            .let { layerRenderService.render(it, params) }
-            .let { foregroundRenderService.render(it, params) }
-            .let { graphicService.fillBackground(it, params.dofusMap.backgroundColor) }
+        println("┌───────────────────────────────────┐")
+        println("│ Render Profiling  %-14s  │".format(params.dofusMap.id))
+        println("├────────────────────┬──────────────┤")
+        val result = raw
+            .profile("Background") { backgroundRenderService.render(it, params) }
+            .profile("Layer") { layerRenderService.render(it, params) }
+            .profile("Foreground") { foregroundRenderService.render(it, params) }
+            .profile("Fill background") { graphicService.fillBackground(it, params.dofusMap.backgroundColor) }
+        println("└────────────────────┴──────────────┘")
+        return result
     }
 }

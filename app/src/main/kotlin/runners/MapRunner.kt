@@ -28,7 +28,7 @@ class MapRunner(
     val mapIdOption by option("--map-id", "-m", help = "Map id").int().required()
 
     override fun run() {
-        val d2pEntry = d2pService.parseEntryFromFolder(inputOption)
+        val d2pEntry = d2pService.parseEntryFromFolderAsStore(inputOption)
         val elements = elementsService.parseElementsFromFile(
             Paths.get(inputOption)
                 .resolve("content")

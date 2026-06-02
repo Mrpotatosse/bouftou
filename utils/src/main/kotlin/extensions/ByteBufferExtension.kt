@@ -278,3 +278,19 @@ fun ByteBuffer.asInputStream(): InputStream {
         }
     }
 }
+
+/*
+ * ============================================================
+ * Clean
+ * ============================================================
+ */
+fun ByteBuffer.freeIfDirect() {
+    if (!isDirect) return
+    try {
+        val cleanerMethod = javaClass.getMethod("cleaner")
+        cleanerMethod.isAccessible = true
+        val cleaner = cleanerMethod.invoke(this)
+        cleaner?.javaClass?.getMethod("clean")?.invoke(cleaner)
+    } catch (_: Exception) {
+    }
+}

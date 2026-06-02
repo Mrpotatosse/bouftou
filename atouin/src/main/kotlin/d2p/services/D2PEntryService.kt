@@ -5,6 +5,7 @@ import extensions.*
 import services.ParamsParserService
 import java.nio.ByteBuffer
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 class D2PEntryService : ParamsParserService<Map<String, D2PEntry>, Pair<Path, Path?>> {
     override fun parse(raw: ByteBuffer, params: Pair<Path, Path?>): Map<String, D2PEntry> =
@@ -33,7 +34,7 @@ class D2PEntryService : ParamsParserService<Map<String, D2PEntry>, Pair<Path, Pa
                     offset,
                     size,
                     newKey,
-                    params.first
+                    params.first.absolutePathString()
                 )
             }
 

@@ -1,19 +1,19 @@
 package d2p.services
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import d2p.entitites.D2PEntry
+import stores.OffHeapReader
+import stores.OffHeapStore
+import java.io.File
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.time.Duration
 import kotlin.io.path.extension
 
 class D2PService(
     private val dataService: D2PDataService,
     private val entryService: D2PEntryService,
 ) {
-
     fun parseEntryFromFile(path: Path, root: Path? = null) =
         if (path.extension == "d2p") FileChannel.open(path, StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
@@ -49,8 +49,28 @@ class D2PService(
     fun parseEntryFromFolder(path: String) =
         parseEntryFromFolder(Path.of(path))
 
-    private fun internalParseDataFromEntry(entry: D2PEntry) =
-        FileChannel.open(entry.path, StandardOpenOption.READ).use { channel ->
+    fun parseEntryFromFolderAsStore(dir: Path): OffHeapReader<String, D2PEntry> {
+        val result = OffHeapStore<String, D2PEntry>(
+            File("cache/d2p.bin")
+                .also { it.parentFile?.mkdirs(); it.delete() })
+
+        Files.walk(dir).use { stream ->
+            stream
+                .filter { Files.isRegularFile(it) && it.extension == "d2p" }
+                .sorted()
+                .forEach { file ->
+                    result.putAll(parseEntryFromFile(file, dir))
+                }
+        }
+
+        return result.seal()
+    }
+
+    fun parseEntryFromFolderAsStore(path: String) =
+        parseEntryFromFolderAsStore(Path.of(path))
+
+    fun parseDataFromEntry(entry: D2PEntry) =
+        FileChannel.open(Path.of(entry.path), StandardOpenOption.READ).use { channel ->
             val buffer = channel.map(
                 FileChannel.MapMode.READ_ONLY,
                 entry.offset.toLong(),
@@ -60,11 +80,5 @@ class D2PService(
             dataService.parse(buffer, entry)
         }
 
-    private val _dataEntryCache = Caffeine.newBuilder()
-        .maximumSize(512 * 1024 * 1024)
-        .expireAfterWrite(Duration.ofSeconds(60))
-        .build(::internalParseDataFromEntry)
-
-    fun parseDataFromEntry(entry: D2PEntry) = _dataEntryCache.get(entry)
 
 }

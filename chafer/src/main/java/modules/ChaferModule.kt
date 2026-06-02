@@ -1,13 +1,19 @@
 package modules
 
+import kit.LoopService
+import kit.WindowService
+import layouts.Main
 import org.koin.dsl.module
 import services.ChaferService
+import services.UIService
+import services.components.MapComponentService
 
 val chaferModule =
     module {
         includes(blopModule, hiboukinModule)
         single {
-            ChaferService(
+            UIService(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -17,4 +23,11 @@ val chaferModule =
                 get()
             )
         }
+
+        single { Main(get()) }
+        single { MapComponentService() }
+
+        single { ChaferService() }
+        single { WindowService() }
+        single { LoopService() }
     }

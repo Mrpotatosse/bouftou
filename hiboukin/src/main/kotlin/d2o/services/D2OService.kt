@@ -1,13 +1,14 @@
 package d2o.services
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import d2o.entities.D2ODataType
 import d2o.entities.D2OEntry
+import stores.OffHeapReader
+import stores.OffHeapStore
+import java.io.File
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.time.Duration
 import kotlin.io.path.extension
 import kotlin.io.path.name
 
@@ -49,9 +50,32 @@ class D2OService(
     fun parseEntryFromFolder(path: String) =
         parseEntryFromFolder(Path.of(path))
 
-    private fun internalParseObjectFromEntry(value: Pair<D2OEntry, Int>) =
+    fun parseEntryFromFolderAsStore(dir: Path): OffHeapReader<D2ODataType, D2OEntry> {
+        val result = OffHeapStore<D2ODataType, D2OEntry>(
+            File("cache/d2o.bin")
+                .also { it.parentFile?.mkdirs(); it.delete() })
+        Files.walk(dir).use { stream ->
+            stream
+                .filter { Files.isRegularFile(it) && it.extension == "d2o" }
+                .sorted()
+                .forEach { file ->
+                    result.put(
+                        D2ODataType.fromName(file.name.substring(0, file.name.indexOf(".d2o"))),
+                        parseEntryFromFile(file, dir)
+                    )
+
+                }
+        }
+
+        return result.seal()
+    }
+
+    fun parseEntryFromFolderAsStore(path: String) =
+        parseEntryFromFolderAsStore(Path.of(path))
+
+    fun parseObjectFromEntry(value: Pair<D2OEntry, Int>) =
         value.first.indexes[value.second]?.let { offset ->
-            FileChannel.open(value.first.path, StandardOpenOption.READ).use { channel ->
+            FileChannel.open(Path.of(value.first.path), StandardOpenOption.READ).use { channel ->
                 val buffer = channel.map(
                     FileChannel.MapMode.READ_ONLY,
                     offset.toLong(),
@@ -62,11 +86,6 @@ class D2OService(
             }
         }
 
-    private val _dataEntryCache = Caffeine.newBuilder()
-        .maximumSize(512 * 1024 * 1024)
-        .expireAfterWrite(Duration.ofSeconds(60))
-        .build(::internalParseObjectFromEntry)
-
-    fun parseObjectFromEntry(entry: D2OEntry, id: Int) = internalParseObjectFromEntry(Pair(entry, id))
+    fun parseObjectFromEntry(entry: D2OEntry, id: Int) = parseObjectFromEntry(Pair(entry, id))
 
 }

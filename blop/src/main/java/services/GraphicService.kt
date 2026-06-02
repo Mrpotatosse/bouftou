@@ -26,6 +26,7 @@ class GraphicService {
         graphic.fillRectRaw(colorRaw, raw.width, raw.height)
         graphic.drawImage(buffer, 0, 0, null)
         graphic.dispose()
+        buffer.flush()
         return raw
     }
 
@@ -34,6 +35,7 @@ class GraphicService {
         val g = out.createGraphics()
         g.drawImage(src, 0, 0, null)
         g.dispose()
+        src.flush()
         return out
     }
 
@@ -62,6 +64,7 @@ class GraphicService {
 
         // ✅ Single bulk write
         out.setRGB(0, 0, w, h, pixels, 0, w)
+        buffer.flush()
         return out
     }
 
@@ -81,6 +84,7 @@ class GraphicService {
 
         val out = createCanvas(w, h)
         out.setRGB(0, 0, w, h, flipped, 0, w)
+        src.flush()
         return out
     }
 

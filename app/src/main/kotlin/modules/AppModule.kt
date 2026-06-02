@@ -28,6 +28,6 @@ val appModule = module {
             get()
         )
     }
-    single { UIRunner(get()) }
+    single { UIRunner(get(), get()) }
     single { D2ORunner(get()) }
 }

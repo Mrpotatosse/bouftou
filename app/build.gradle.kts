@@ -27,3 +27,14 @@ application {
     // (Note that Kotlin compiles `App.kt` to a class with FQN `com.example.app.AppKt`.)
     mainClass = "bouftou.app.AppKt"
 }
+
+
+// build.gradle.kts
+tasks.withType<JavaExec> {
+    jvmArgs(
+        "--enable-native-access=ALL-UNNAMED",
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.nio=ALL-UNNAMED",
+    )
+
+}

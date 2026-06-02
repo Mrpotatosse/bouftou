@@ -27,7 +27,7 @@ class D2OObjectFieldsService : ParamsParserService<D2OObjectFields, D2OObjectEnt
                 val len = raw.readInt()
                 val result = mutableListOf<Any?>()
                 (0 until len).forEach { _ ->
-                    result.add(parseFieldValue(raw, params, field.fieldType))
+                    result.add(parseFieldValue(raw, params, field.fieldType!!))
                 }
                 result
             }

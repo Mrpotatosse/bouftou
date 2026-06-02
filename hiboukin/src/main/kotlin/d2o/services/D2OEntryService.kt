@@ -7,6 +7,7 @@ import extensions.seek
 import services.ParamsParserService
 import java.nio.ByteBuffer
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 class D2OEntryService(
     private val d2oEntryIndexService: D2OEntryIndexService,
@@ -18,6 +19,6 @@ class D2OEntryService(
         val offset = raw.readInt()
         val indexes = d2oEntryIndexService.parse(raw.seek(offset))
         val classes = d2oEntryClassService.parse(raw)
-        return D2OEntry(indexes, classes, params.first)
+        return D2OEntry(indexes, classes, params.first.absolutePathString())
     }
 }

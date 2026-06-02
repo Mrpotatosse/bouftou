@@ -1,10 +1,8 @@
 package d2p.entitites
 
-import java.nio.file.Path
-
 data class D2PEntry(
-    val offset: Int,
-    val size: Int,
-    val key: String,
-    val path: Path
+    val offset: Int = 0,
+    val size: Int = 0,
+    val key: String = "",
+    val path: String = ""
 )
